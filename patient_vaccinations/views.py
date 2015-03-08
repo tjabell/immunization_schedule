@@ -1,6 +1,11 @@
 from django.shortcuts import render
-from patient_vaccinations.models import Patient, get_vaccinations
-import datetime
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from patient_vaccinations.models import get_vaccinations, Patient
+import urllib
+import requests
+
+base_url = 'https://drchrono.com'
 
 months = ['Birth',
           '1 month',
@@ -63,8 +68,22 @@ class PatientVaccinationsSchedule(object):
 
 
 def index(request,  id):
-    patient = Patient(id, 'Joy Ferguson', datetime.date(2014, 10, 5))
+    access_token = request.session.get('access_token')
+
+    if access_token is None:
+        return HttpResponseRedirect(reverse('authorize'))
+
+    authorization_header = "Bearer %s" % urllib.quote(access_token)
+    headers = {'Authorization': authorization_header}
+    patient_url = '/api/patients/%s' % id
+    patient_response = requests.get(base_url + patient_url, headers=headers).json()
+
+    patient = Patient(
+        id,
+        patient_response['first_name'] + ' ' + patient_response['last_name'],
+        patient_response['date_of_birth'])
     patient.vaccinations = get_vaccinations(patient.id)
+
 
     vaccinations = []
     for immunization_key in sorted(immunization_schedule):

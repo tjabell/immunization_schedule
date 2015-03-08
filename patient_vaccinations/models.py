@@ -22,6 +22,7 @@ class Patient(object):
         self.id = id
         self.birthdate = birthdate
         self.vaccinations = []
+
     def is_overdue_for(self, immunization):
         # today = datetime.date.today()
         # months_old = (today - self.birthdate).days / 30
@@ -34,7 +35,7 @@ class Patient(object):
                 is_overdue = False
         return is_overdue
 
-# Create your models here.
+
 class Vaccination(models.Model):
     """Vaccination for a patient"""
     def __init__(self):
@@ -44,6 +45,3 @@ class Vaccination(models.Model):
     immunization_id = models.IntegerField()
     date = models.DateField()
     dose = models.IntegerField()
-
-
-# 'name' : (id, [(dose, sched_start_month, sched_end_month)]
