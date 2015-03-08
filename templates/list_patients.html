@@ -1,0 +1,19 @@
+<html>
+    <head>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+        <script type="text/javascript">
+         jQuery(document).ready(function($) {
+             /* var patient_json = '{{ patients }}';
+                var patients = $.parseJSON(patient_json); */
+             /* console.log(patients); */
+         });
+        </script>
+	      <title>List Patients</title>
+    </head>
+    <body>
+
+	      {% for patient in patients %}
+		        <p><a href="{% url 'index' patient.id %}">{{ patient.first_name }} {{ patient.last_name }}</a></p>
+	      {% endfor %}
+    </body>
+</html>
