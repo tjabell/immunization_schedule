@@ -27,11 +27,13 @@
                             {% if m.dose_due %}
                                 {% if m.dose == '2nd Dose' %}
 					                          <td class="non-dose"></td>
-                                {% else %}
+                                {% elif m.dose == '1st Dose' %}
                                     <td class="{{ m.dose_key }}" colspan="{{ m.consecutive_months }}">{{ m.dose }}</td>
+                                {% else %}
+                                    <td rowspan="2" class="{{ m.dose_key }}" colspan="{{ m.consecutive_months }}">{{ m.dose }}</td>
                                 {% endif %}
                             {% else %}
-					                      <td class="non-dose"></td>
+					                      <td rowspan="2" class="non-dose"></td>
                             {% endif %}
 			                  {% endfor %}
                     </tr>
@@ -41,12 +43,8 @@
                                 <td class="{{ m.dose_key }}" colspan="{{ m.consecutive_months }}">{{ m.dose }}</td>
                             {% elif m.dose_due and m.dose == '1st Dose' %}
                                 <td class="non-dose"></td>
-                            {% elif m.dose_due %}
-                                {% for i in m.consecutive_months|get_range %}
-					                          <td class="non-dose"></td>
-                                {% endfor %}
                             {% else %}
-                                <td style="background-color:white"></td>
+                                <!-- <td style="background-color:white"></td> -->
                             {% endif %}
 			                  {% endfor %}
                     </tr>
