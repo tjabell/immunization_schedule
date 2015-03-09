@@ -84,7 +84,6 @@ def index(request,  id):
         patient_response['date_of_birth'])
     patient.vaccinations = get_vaccinations(patient.id)
 
-
     vaccinations = []
     for immunization_key in sorted(immunization_schedule):
         is_overdue = False

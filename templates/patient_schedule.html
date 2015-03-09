@@ -3,63 +3,68 @@
 	<title>Patient Schedule</title>
 	{% load staticfiles %}
   {% load range %}
+  <link href="{% static 'x_rotating_card/css/bootstrap.css' %}" rel="stylesheet"/>
+  <link href="{% static 'x_rotating_card/css/rotating-card.css' %} " rel="stylesheet"/>
+  <link href="http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" />
   <link href="{% static 'mysite.css' %}" rel="stylesheet" />
 </head>
 <body>
-{{ patient_vaccinations.patient.name }} ({{ patient_vaccinations.patient.birthdate }})
-	<table>
-		<tr>
-			<th>Vaccine</th>
-			{% for m in patient_vaccinations.months %}
-			    <th>{{ m }}</th>
-			{% endfor %}
-		</tr>
-		{% for v in patient_vaccinations.vaccinations %}
-        <!-- All this to deal with an overlap -->
-        {% if v.name == 'Hepatitis B' %}
-            <tr>
-                <td rowspan="2">{{ v.name }} {% if v.is_overdue %} (overdue) {% endif %}</td>
-			          {% for m in v.months %}
-                    {% if m.dose_due %}
-                        {% if m.dose == '2nd Dose' %}
-					                  <td class="non-dose"></td>
-                        {% else %}
-                            <td class="{{ m.dose_key }}" colspan="{{ m.consecutive_months }}">{{ m.dose }}</td>
-                        {% endif %}
-                    {% else %}
-					              <td class="non-dose"></td>
-                    {% endif %}
-			          {% endfor %}
-            </tr>
-            <tr>
-                {% for m in v.months %}
-                    {% if m.dose_due and m.dose == '2nd Dose' %}
-                        <td class="{{ m.dose_key }}" colspan="{{ m.consecutive_months }}">{{ m.dose }}</td>
-                    {% elif m.dose_due and m.dose == '1st Dose' %}
-                        <td class="non-dose"></td>
-                    {% elif m.dose_due %}
-                        {% for i in m.consecutive_months|get_range %}
-					                  <td class="non-dose"></td>
-                        {% endfor %}
-                    {% else %}
-                        <td style="background-color:white"></td>
-                    {% endif %}
-			          {% endfor %}
-            </tr>
-            <!-- End  -->
-        {% else %}
+    <div class="container">
+        <h2>{{ patient_vaccinations.patient.name }} ({{ patient_vaccinations.patient.birthdate }})</h2>
+	      <table>
 		        <tr>
-			          <td>{{ v.name }} {% if v.is_overdue %} (overdue) {% endif %}</td>
-			          {% for m in v.months %}
-                    {% if m.dose_due %}
-                        <td class="{{ m.dose_key }}" colspan="{{ m.consecutive_months }}">{{ m.dose }}</td>
-                    {% else %}
-					              <td class="non-dose"></td>
-                    {% endif %}
+			          <th>Vaccine</th>
+			          {% for m in patient_vaccinations.months %}
+			              <th>{{ m }}</th>
 			          {% endfor %}
 		        </tr>
-    {% endif %}
-		{% endfor %}
-	</table>
+		        {% for v in patient_vaccinations.vaccinations %}
+                <!-- All this to deal with an overlap -->
+                {% if v.name == 'Hepatitis B' %}
+                    <tr>
+                        <td rowspan="2">{{ v.name }} {% if v.is_overdue %} (overdue) {% endif %}</td>
+			                  {% for m in v.months %}
+                            {% if m.dose_due %}
+                                {% if m.dose == '2nd Dose' %}
+					                          <td class="non-dose"></td>
+                                {% else %}
+                                    <td class="{{ m.dose_key }}" colspan="{{ m.consecutive_months }}">{{ m.dose }}</td>
+                                {% endif %}
+                            {% else %}
+					                      <td class="non-dose"></td>
+                            {% endif %}
+			                  {% endfor %}
+                    </tr>
+                    <tr>
+                        {% for m in v.months %}
+                            {% if m.dose_due and m.dose == '2nd Dose' %}
+                                <td class="{{ m.dose_key }}" colspan="{{ m.consecutive_months }}">{{ m.dose }}</td>
+                            {% elif m.dose_due and m.dose == '1st Dose' %}
+                                <td class="non-dose"></td>
+                            {% elif m.dose_due %}
+                                {% for i in m.consecutive_months|get_range %}
+					                          <td class="non-dose"></td>
+                                {% endfor %}
+                            {% else %}
+                                <td style="background-color:white"></td>
+                            {% endif %}
+			                  {% endfor %}
+                    </tr>
+                    <!-- End  -->
+                {% else %}
+		                <tr>
+			                  <td>{{ v.name }} {% if v.is_overdue %} (overdue) {% endif %}</td>
+			                  {% for m in v.months %}
+                            {% if m.dose_due %}
+                                <td class="{{ m.dose_key }}" colspan="{{ m.consecutive_months }}">{{ m.dose }}</td>
+                            {% else %}
+					                      <td class="non-dose"></td>
+                            {% endif %}
+			                  {% endfor %}
+		                </tr>
+                {% endif %}
+		        {% endfor %}
+	      </table>
+    </div>
 </body>
 </html>

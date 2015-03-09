@@ -22,6 +22,7 @@ class Patient(object):
         self.id = id
         self.birthdate = birthdate
         self.vaccinations = []
+        self.since = ''
 
     def is_overdue_for(self, immunization):
         # today = datetime.date.today()
