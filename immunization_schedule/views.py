@@ -13,17 +13,19 @@ base_url = 'https://drchrono.com'
 # base_url = 'http://www.drchrono.l:8001'
 token_url = base_url + '/o/token/'
 authorize_url = base_url + '/o/authorize/'
-redirect_uri = 'http://django15-arch-ws:8000/authorize/retrieve_tokens/'
 
 
 def authorize_handler(request):
+    redirect_uri = request.build_absolute_uri(reverse('retrieve'))
+    print('redirect_uri: ' + redirect_uri)
     authorize_url_with_redirect = authorize_url + '?redirect_uri=%s&response_type=code&client_id=%s' % (urllib.quote(redirect_uri), urllib.quote(CLIENT_ID))
     return HttpResponseRedirect(authorize_url_with_redirect)
 
 
 def retrieve_tokens(request):
     code = request.GET['code']
-
+    redirect_uri = request.build_absolute_uri(reverse('retrieve'))
+    print('redirect_uri: ' + redirect_uri)
     if code != "":
         token_retrieval_url = token_url + '?code=%s&grant_type=authorization_code&redirect_uri=%s&client_id=%s&client_secret=%s' % (code, urllib.quote(redirect_uri, ''), urllib.quote(CLIENT_ID, ''), urllib.quote(CLIENT_SECRET, ''))
 
