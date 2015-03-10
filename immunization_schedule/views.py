@@ -92,5 +92,10 @@ def retrieve_patients(access_token):
     return patients
 
 
+def register(request):
+    print(request)
+    return HttpResponseRedirect(reverse('index.html'))
+
+
 def home(request):
     return render(request, 'index.html')
