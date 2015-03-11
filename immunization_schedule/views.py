@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.http import HttpResponseRedirect
+from  django.contrib import auth
 import os
 import hashlib
 import requests
@@ -95,13 +96,18 @@ def retrieve_patients(access_token):
     return patients
 
 
+def logout(request):
+    auth.logout(request)
+    return HttpResponseRedirect(reverse('home'))
+
+
 def login(request):
     email = request.POST['email']
     pw = request.POST['password']
     u = User.objects.get(username__exact=email)
-    algo, salt, hash_to_match = u.password.split('$')[1]
+    algorithm, salt, hash_to_match = u.password.split('$')[1]
     hash = hashlib.md5(salt + pw.encode("utf-8")).hexdigest()
-    pw = '{0}${1}${2}'.format(algo,salt,hash)
+    pw = '{0}${1}${2}'.format(algorithm, salt, hash)
     user = authenticate(username=email, password=pw)
 
     if user is not None:
@@ -115,7 +121,7 @@ def login(request):
         print("Username and pw were incorrect")
         return HttpResponseRedirect(reverse('home'))
 
-    
+
 def register(request):
     salt = os.urandom(32).encode("base-64")
     hash = hashlib.md5(salt + request.POST['password'].encode("utf-8")).hexdigest()
