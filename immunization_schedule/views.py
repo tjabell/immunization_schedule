@@ -104,10 +104,10 @@ def logout(request):
 def login(request):
     email = request.POST['email']
     pw = request.POST['password']
-    u = User.objects.get(username__exact=email)
-    algorithm, salt, hash_to_match = u.password.split('$')[1]
-    hash = hashlib.md5(salt + pw.encode("utf-8")).hexdigest()
-    pw = '{0}${1}${2}'.format(algorithm, salt, hash)
+    # u = User.objects.get(username__exact=email)
+    # algorithm, salt, hash_to_match = u.password.split('$')[1]
+    # hash = hashlib.md5(salt + pw.encode("utf-8")).hexdigest()
+    # pw = '{0}${1}${2}'.format(algorithm, salt, hash)
     user = authenticate(username=email, password=pw)
 
     if user is not None:
@@ -123,10 +123,12 @@ def login(request):
 
 
 def register(request):
-    salt = os.urandom(32).encode("base-64")
-    hash = hashlib.md5(salt + request.POST['password'].encode("utf-8")).hexdigest()
-    pw = 'md5${0}${1}'.format(salt,hash)
-    u = User.objects.create_user(request.POST['email'], pw)
+    # salt = os.urandom(32).encode("base-64")
+    # hash = hashlib.md5(
+    #     salt + request.POST['password'].encode("utf-8")).hexdigest()
+    # pw = 'md5${0}${1}'.format(salt, hash)
+    email = request.POST['email']
+    u = User.objects.create_user(email, email, request.POST['password'])
     u.save()
     return HttpResponseRedirect(reverse('list_patients'))
 

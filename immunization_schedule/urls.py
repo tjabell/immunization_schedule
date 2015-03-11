@@ -8,4 +8,5 @@ urlpatterns = patterns('',
                        url(r'^logout/', views.logout, name='logout'),
                        url(r'^$', 'immunization_schedule.views.home', name='home'),
                        url(r'^register/', views.register, name='registration'),
+                       url(r'^login/', views.login, name='login'),
                        url(r'^patient_vaccinations/', include('patient_vaccinations.urls')))
