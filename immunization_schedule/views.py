@@ -1,7 +1,11 @@
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 from django.http import HttpResponseRedirect
+from  django.contrib import auth
 import os
+import hashlib
 import requests
 import json
 import urllib
@@ -90,6 +94,43 @@ def retrieve_patients(access_token):
         patients_url = data['next']  # A JSON null on the last page
 
     return patients
+
+
+def logout(request):
+    auth.logout(request)
+    return HttpResponseRedirect(reverse('home'))
+
+
+def login(request):
+    email = request.POST['email']
+    pw = request.POST['password']
+    # u = User.objects.get(username__exact=email)
+    # algorithm, salt, hash_to_match = u.password.split('$')[1]
+    # hash = hashlib.md5(salt + pw.encode("utf-8")).hexdigest()
+    # pw = '{0}${1}${2}'.format(algorithm, salt, hash)
+    user = authenticate(username=email, password=pw)
+
+    if user is not None:
+        if user.is_active:
+            print("User is active, valid, and authed")
+            return HttpResponseRedirect(reverse('list_patients'))
+        else:
+            print("User is valid but disabled")
+            return HttpResponseRedirect(reverse('home'))
+    else:
+        print("Username and pw were incorrect")
+        return HttpResponseRedirect(reverse('home'))
+
+
+def register(request):
+    # salt = os.urandom(32).encode("base-64")
+    # hash = hashlib.md5(
+    #     salt + request.POST['password'].encode("utf-8")).hexdigest()
+    # pw = 'md5${0}${1}'.format(salt, hash)
+    email = request.POST['email']
+    u = User.objects.create_user(email, email, request.POST['password'])
+    u.save()
+    return HttpResponseRedirect(reverse('list_patients'))
 
 
 def home(request):
