@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.http import HttpResponseRedirect
 from  django.contrib import auth
+from django.contrib.auth.decorators import login_required
 import os
 import hashlib
 import requests
@@ -59,6 +60,9 @@ def refresh_access(authorized_user):
 
 
 def list_patients(request):
+    if not request.user.is_authenticated():
+        return render(request, 'login_error.html')
+
     access_token = request.session.get('access_token')
     refresh_token = request.session.get('refresh_token')
 
@@ -72,7 +76,7 @@ def list_patients(request):
     doctor_url = user_data['doctor']
     doctor_data = requests.get(doctor_url, headers=headers).json()
     patients = retrieve_patients(access_token)
-    print(patients[0])
+
     return render(request,
                   'list_patients.html',
                   {'user': user_data,
@@ -104,15 +108,12 @@ def logout(request):
 def login(request):
     email = request.POST['email']
     pw = request.POST['password']
-    # u = User.objects.get(username__exact=email)
-    # algorithm, salt, hash_to_match = u.password.split('$')[1]
-    # hash = hashlib.md5(salt + pw.encode("utf-8")).hexdigest()
-    # pw = '{0}${1}${2}'.format(algorithm, salt, hash)
     user = authenticate(username=email, password=pw)
 
     if user is not None:
         if user.is_active:
             print("User is active, valid, and authed")
+            auth.login(request, user)
             return HttpResponseRedirect(reverse('list_patients'))
         else:
             print("User is valid but disabled")

@@ -45,6 +45,7 @@ immunization_schedule = {
 
 class VaccinationMonth(object):
     def __init__(self, name, dose, dose_due, dose_key):
+        self.scheduleId = 0
         self.name = name
         self.dose = dose
         self.dose_due = dose_due
@@ -89,15 +90,16 @@ def index(request,  id):
         is_overdue = False
         vaccination_months = []
         immunization = immunization_schedule[immunization_key]
-        id, schedule = immunization
-
+        schedId, schedule = immunization
+        print(schedId)
         # horrible hack to skip months that are consecutive in the schedule
         skip = 0
         for monthnum in months:
             vm = VaccinationMonth(monthnum, None, False, '')
 
-            for dose_key, dose_month, consecutive_months in schedule:
-                if monthnum == dose_month:
+            for dose_key, doseMonth, consecutive_months in schedule:
+                if monthnum == doseMonth:
+                    vm.scheduleId = schedId
                     vm.dose_key = dose_key
                     vm.dose_due = True
                     vm.dose = dose_map[dose_key]

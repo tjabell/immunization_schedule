@@ -3,14 +3,38 @@
 	<title>Patient Schedule</title>
 	{% load staticfiles %}
   {% load range %}
+  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
   <link href="{% static 'x_rotating_card/css/bootstrap.css' %}" rel="stylesheet"/>
   <link href="{% static 'x_rotating_card/css/rotating-card.css' %} " rel="stylesheet"/>
   <link href="http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" />
   <link href="{% static 'mysite.css' %}" rel="stylesheet" />
+  <style>
+   #draggable, #draggable2 { width: 90px; height: 90px; padding: 0.5em; float: left; margin: 10px 10px 10px 0; }
+   #droppable2 { width: 120px; height: 120px; padding: 0.5em; float: left; margin: 10px; }
+   h3 { clear: left; }
+  </style>
+  <script>
+   $(function() {
+       $( "#draggable" ).draggable();
+       
+       $( "#draggable2" ).draggable();
+       $( "#droppable2" ).droppable({
+           accept: "#draggable2",
+           activeClass: "ui-state-default",
+           drop: function( event, ui ) {
+               $( this )
+          .addClass( "ui-state-highlight" )
+          .find( "p" )
+          .html( "Vaccinated!" );
+           }
+       });
+   });
+  </script>
 </head>
 <body>
     <div class="container">
-        <a href="logout/">Logout</a>
+        <a href="{% url 'logout' %}">Logout</a>
         <h2>{{ patient_vaccinations.patient.name }} ({{ patient_vaccinations.patient.birthdate }})</h2>
 	      <table>
 		        <tr>
@@ -19,11 +43,13 @@
 			              <th>{{ m }}</th>
 			          {% endfor %}
 		        </tr>
+
 		        {% for v in patient_vaccinations.vaccinations %}
-                <!-- All this to deal with an overlap in the Hep B immunization -->
+
                 {% if v.name == 'Hepatitis B' %}
+                    <!-- All this to deal with an overlap in the Hep B immunization -->
                     <tr>
-                        <td rowspan="2">{{ v.name }} {% if v.is_overdue %} (overdue) {% endif %}</td>
+                        <td rowspan="2"><div>{{ v.name }} {% if v.is_overdue %} (overdue) {% endif %}</div></td>
 			                  {% for m in v.months %}
                             {% if m.dose_due %}
                                 {% if m.dose == '2nd Dose' %}
@@ -41,21 +67,21 @@
                     <tr>
                         {% for m in v.months %}
                             {% if m.dose_due and m.dose == '2nd Dose' %}
-                                <td class="{{ m.dose_key }}" colspan="{{ m.consecutive_months }}">{{ m.dose }}</td>
+                                <td id="droppable" class="{{ m.dose_key }}" colspan="{{ m.consecutive_months }}"><div>{{ m.dose }}</div></td>
                             {% elif m.dose_due and m.dose == '1st Dose' %}
                                 <td class="non-dose"></td>
                             {% else %}
                                 <!-- <td style="background-color:white"></td> -->
                             {% endif %}
+                            <!-- End  -->
 			                  {% endfor %}
                     </tr>
-                    <!-- End  -->
                 {% else %}
 		                <tr>
 			                  <td class="doubleheight">{{ v.name }} {% if v.is_overdue %} (overdue) {% endif %}</td>
 			                  {% for m in v.months %}
                             {% if m.dose_due %}
-                                <td class="{{ m.dose_key }} doubleheight" colspan="{{ m.consecutive_months }}">{{ m.dose }}</td>
+                                <td  id="droppable-{{ m.scheduleId}}-{{m.dose_key}}"class="{{ m.dose_key }} doubleheight" colspan="{{ m.consecutive_months }}"><div>{{ m.dose }}</div></td>
                             {% else %}
 					                      <td class="non-dose doubleheight"></td>
                             {% endif %}
@@ -64,6 +90,30 @@
                 {% endif %}
 		        {% endfor %}
 	      </table>
+        <div id="draggable" class="ui-widget-content">
+            <h4>Drag to vaccinate patient</h4>
+        </div>
     </div>
+    <script>
+     $(document).ready(function () {
+         
+       {% for v in patient_vaccinations.vaccinations %}
+       {% for m in v.months %}
+       {% if m.dose_due %}
+       $( "#droppable-{{ m.scheduleId}}-{{m.dose_key}}" ).droppable({
+           hoverClass: "ui-state-hover",
+           drop: function( event, ui ) {
+               $( this )
+          .addClass( "ui-state-highlight" )
+          .find( "div" )
+          .html( "Vaccinated!" );
+           }
+       });
+       {% endif %}
+       {% endfor %}
+       {% endfor %}
+     });
+    </script>
+    
 </body>
 </html>
