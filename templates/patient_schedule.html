@@ -5,6 +5,7 @@
   {% load range %}
   <script src="//code.jquery.com/jquery-1.10.2.js"></script>
   <script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
+  <script type="text/javascript" src="{% static 'jquery.cookie.js' %}"></script>
   <link href="{% static 'x_rotating_card/css/bootstrap.css' %}" rel="stylesheet"/>
   <link href="{% static 'x_rotating_card/css/rotating-card.css' %} " rel="stylesheet"/>
   <link href="http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" />
@@ -91,12 +92,18 @@
 		        {% endfor %}
 	      </table>
         <div id="draggable" class="ui-widget-content">
-            <h4>Drag to vaccinate patient</h4>
+            <h4>Drag&Drop to Vaccinate</h4>
         </div>
     </div>
     <script>
      $(document).ready(function () {
-         
+         var csrftoken = $.cookie('csrftoken');
+                
+         function csrfSafeMethod(method) {
+             // these HTTP methods do not require CSRF protection
+             return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+         };
+                
        {% for v in patient_vaccinations.vaccinations %}
        {% for m in v.months %}
        {% if m.dose_due %}
@@ -104,9 +111,30 @@
            hoverClass: "ui-state-hover",
            drop: function( event, ui ) {
                $( this )
-          .addClass( "ui-state-highlight" )
-          .find( "div" )
-          .html( "Vaccinated!" );
+                  .addClass( "ui-state-highlight" )
+                  .find( "div" )
+                  .html( "Vaccinated!" );
+
+               $.ajaxSetup({
+                    beforeSend: function(xhr, settings) {
+                        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                            // send the token to same-origin, relative URLs only.
+                            // Send the token only if the method warrants CSRF protection
+                            // Using the CSRFToken value acquired earlier
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                        }
+                    }
+               });
+
+               var obj = {}
+               $.ajax({
+                        url: '{% url 'vaccinate' %}',
+                        type: 'POST',
+                        data: obj,
+                        success: function(res) {},
+                        complete: function() {},
+                        error: function (xhr, textStatus, thrownError) {}
+                    });
            }
        });
        {% endif %}

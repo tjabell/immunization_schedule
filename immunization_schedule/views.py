@@ -22,7 +22,6 @@ authorize_url = base_url + '/o/authorize/'
 
 def authorize_handler(request):
     redirect_uri = request.build_absolute_uri(reverse('retrieve'))
-    print('redirect_uri: ' + redirect_uri)
     authorize_url_with_redirect = authorize_url + '?redirect_uri=%s&response_type=code&client_id=%s' % (urllib.quote(redirect_uri), urllib.quote(CLIENT_ID))
     return HttpResponseRedirect(authorize_url_with_redirect)
 
@@ -30,7 +29,6 @@ def authorize_handler(request):
 def retrieve_tokens(request):
     code = request.GET['code']
     redirect_uri = request.build_absolute_uri(reverse('retrieve'))
-    print('redirect_uri: ' + redirect_uri)
     if code != "":
         token_retrieval_url = token_url + '?code=%s&grant_type=authorization_code&redirect_uri=%s&client_id=%s&client_secret=%s' % (code, urllib.quote(redirect_uri, ''), urllib.quote(CLIENT_ID, ''), urllib.quote(CLIENT_SECRET, ''))
 
@@ -124,10 +122,6 @@ def login(request):
 
 
 def register(request):
-    # salt = os.urandom(32).encode("base-64")
-    # hash = hashlib.md5(
-    #     salt + request.POST['password'].encode("utf-8")).hexdigest()
-    # pw = 'md5${0}${1}'.format(salt, hash)
     email = request.POST['email']
     u = User.objects.create_user(email, email, request.POST['password'])
     u.save()

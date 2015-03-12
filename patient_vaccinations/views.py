@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from patient_vaccinations.models import get_vaccinations, Patient
 import urllib
 import requests
+import json
 
 base_url = 'https://drchrono.com'
 
@@ -91,7 +92,7 @@ def index(request,  id):
         vaccination_months = []
         immunization = immunization_schedule[immunization_key]
         schedId, schedule = immunization
-        print(schedId)
+
         # horrible hack to skip months that are consecutive in the schedule
         skip = 0
         for monthnum in months:
@@ -121,3 +122,7 @@ def index(request,  id):
                PatientVaccinationsSchedule(patient, months, vaccinations)}
 
     return render(request, 'patient_schedule.html', context)
+
+
+def vaccinate(request):
+    return HttpResponse(json.dumps({"result": "success"}), content_type="application/x-javascript")
