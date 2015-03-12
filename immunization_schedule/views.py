@@ -3,10 +3,8 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.http import HttpResponseRedirect
-from  django.contrib import auth
-from django.contrib.auth.decorators import login_required
+from django.contrib import auth
 import os
-import hashlib
 import requests
 import json
 import urllib
@@ -74,7 +72,7 @@ def list_patients(request):
     doctor_url = user_data['doctor']
     doctor_data = requests.get(doctor_url, headers=headers).json()
     patients = retrieve_patients(access_token)
-
+    print(patients[0])
     return render(request,
                   'list_patients.html',
                   {'user': user_data,

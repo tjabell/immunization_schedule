@@ -15,36 +15,37 @@
                     Patient Vaccination Schedules
                 </h1>
                 {% for patient in patients %}
-             <div class="col-xs-4">
-            <div class="card-container">
-            <div class="card">
-                <div class="front">
-                    <div class="cover">
-                        <!-- <img src="images/rotating_card_thumb3.png"/> -->
-                    </div>
-                    <div class="user">
-                        <!-- <img class="img-circle" src="images/rotating_card_profile.png"/> -->
-                    </div>
-                    <div class="content">
-                        <div class="main">
-                            <h3 class="name">{{ patient.first_name }} {{ patient.last_name }}</h3>
-                        </div>
-                    </div>
-                </div> <!-- end front panel -->
-                <div class="back">
-                    <div class="header">
-                        <h5 class="motto">Patient Since: {{ patient.date_of_first_appointment }}</h5>
-                    </div> 
-                    <div class="content">
-                        <div class="main">
-                            <h4 class="text-center"><a href="{% url 'index' patient.id %}">Vaccination Schedule</a></h4>
-                        </div>
-                    </div>
-                </div> <!-- end back panel -->
-            </div> <!-- end card -->
-            </div> <!-- end card-container -->
-             </div> <!-- end col-xs-4 -->
-             {% endfor %}
+                    <div class="col-xs-4">
+                        <div class="card-container">
+                            <div class="card">
+                                <div class="front">
+                                    <div class="cover">
+                                        <!-- <img src="images/rotating_card_thumb3.png"/> -->
+                                    </div>
+                                    <div class="user">
+                                        <!-- <img class="img-circle" src="images/rotating_card_profile.png"/> -->
+                                    </div>
+                                    <div class="content">
+                                        <div class="main">
+                                            <h3 class="name">{{ patient.first_name }} {{ patient.last_name }}</h3>
+                                        </div>
+                                    </div>
+                                </div> <!-- end front panel -->
+                                <div class="back">
+                                    <div class="header">
+                                        <h5 class="motto">Patient Since: {{ patient.date_of_first_appointment }}</h5>
+                                        <h5 class="motto">Birthdate: {{ patient.date_of_birth }}</h5>
+                                    </div> 
+                                    <div class="content">
+                                        <div class="main">
+                                            <h4 class="text-center"><a href="{% url 'index' patient.id %}">Vaccination Schedule</a></h4>
+                                        </div>
+                                    </div>
+                                </div> <!-- end back panel -->
+                            </div> <!-- end card -->
+                        </div> <!-- end card-container -->
+                    </div> <!-- end col-xs-4 -->
+                {% endfor %}
             </div> <!-- end row -->
         </div> <!-- end container -->        
     </body>
