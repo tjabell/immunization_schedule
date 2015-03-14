@@ -11,13 +11,13 @@
   <link href="http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" />
   <link href="{% static 'mysite.css' %}" rel="stylesheet" />
   <style>
-   #draggable, #draggable2 { width: 90px; height: 90px; padding: 0.5em; float: left; margin: 10px 10px 10px 0; }
+   #draggable, #draggable2 { width: 90px; padding: 0.5em; float: left; margin: 10px 10px 10px 0; }
    #droppable2 { width: 120px; height: 120px; padding: 0.5em; float: left; margin: 10px; }
    h3 { clear: left; }
   </style>
   <script>
    $(function() {
-       $( "#draggable" ).draggable();
+       $( "#draggable" ).draggable({ revert: "valid" });
        
        $( "#draggable2" ).draggable();
        $( "#droppable2" ).droppable({
@@ -91,9 +91,7 @@
                 {% endif %}
 		        {% endfor %}
 	      </table>
-        <div id="draggable" class="ui-widget-content">
-            <h4>Drag&Drop to Vaccinate</h4>
-        </div>
+        <a class="btn btn-primary ui-widget-content" href="#" role="button" id="draggable">Vaccinate</a>
     </div>
     <script>
      $(document).ready(function () {

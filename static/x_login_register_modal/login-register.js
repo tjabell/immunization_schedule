@@ -66,4 +66,3 @@ function shakeModal(){
     }, 1000 ); 
 }
 
-   
