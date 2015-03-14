@@ -34,13 +34,34 @@ dose_map = {
 
 # vaccine : (vaccine_id, [(dose_map_key, month, consecutive_months_for_dose)]
 immunization_schedule = {
-    'Hepatitis B': (1, [('first', 'Birth', 2),  ('second', '1 month', 2), ('third', '6 months', 4), ('c', '11-12 years', 1)]),
-    'Diptheria, Tetanus, Pertussis': (2, [('first','2 months', 1), ('second', '4 months', 1), ('third', '6 months', 1), ('fourth', '15 months', 2)]),
-    'H.Influenzae type B': (4, [('first','2 months', 1), ('second', '4 months', 1), ('third', '6 months', 1), ('fourth', '12 months', 2)]),
-    'Inactivated Polio': (5, [('first','2 months', 1), ('second', '4 months', 1), ('third', '6 months', 4), ('fourth', '4-6 years', 1)]),
-    'Pneumococcal Conjugate': (6, [('first','2 months', 1), ('second', '4 months', 1), ('third', '6 months', 1), ('fourth', '12 months', 2)]),
-    'Measles, Mumps, Rubella': (3, [('first', '12 months', 2), ('second', '4-6 years', 1), ('c', '11-12 years', 1)]),
-    'Varicella (Chickenpox)': (7, [('first', '12 months', 3), ('c', '11-12 years', 1)]),
+    'Hepatitis B':
+    (1,
+     [('first', 'Birth', 2),  ('third', '6 months', 4), ('c', '11-12 years', 1)]
+     [('second', '1 month', 2)]),
+    'Diptheria, Tetanus, Pertussis':
+    (2,
+     [('first','2 months', 1), ('second', '4 months', 1), ('third', '6 months', 1), ('fourth', '15 months', 2)],
+    []),
+    'H.Influenzae type B':
+    (4,
+     [('first','2 months', 1), ('second', '4 months', 1), ('third', '6 months', 1), ('fourth', '12 months', 2)],
+     []),
+    'Inactivated Polio':
+    (5,
+     [('first','2 months', 1), ('second', '4 months', 1), ('third', '6 months', 4), ('fourth', '4-6 years', 1)],
+     []),
+    'Pneumococcal Conjugate':
+    (6,
+     [('first','2 months', 1), ('second', '4 months', 1), ('third', '6 months', 1), ('fourth', '12 months', 2)],
+    []),
+    'Measles, Mumps, Rubella':
+    (3,
+     [('first', '12 months', 2), ('second', '4-6 years', 1), ('c', '11-12 years', 1)],
+     []),
+    'Varicella (Chickenpox)':
+    (7,
+     [('first', '12 months', 3), ('c', '11-12 years', 1)],
+     []),
     'Hepatitis A': (8, [('first', '24 months',  4)])}
 
 
