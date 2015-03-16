@@ -1,5 +1,4 @@
 # Django settings for immunization_schedule project.
-
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
