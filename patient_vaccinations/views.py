@@ -60,10 +60,13 @@ class OrdinalRange(object):
         self.end = end
 
     def overlaps(self, ordinal_range):
-        return self.start >= ordinal_range.end
+        return self.end >= ordinal_range.start
 
     def overlapped(self, ordinal_range):
-        return self.end <= ordinal_range.start
+        return self.start >= ordinal_range.end
+
+    def __str__(self):
+        return "{" + str(self.start) + "-" + str(self.end) + "}"
 
 
 class Immunization(object):

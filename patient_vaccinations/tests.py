@@ -22,5 +22,4 @@ class An_immunization_schedule(TestCase):
         id, schedule = cis['Hepatitis B']
         ims = [Immunization(*i) for i in schedule]
         hs = has_overlap(ims[0], ims)
-        print(hs)
         self.assertTrue(hs)
