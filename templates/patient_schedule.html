@@ -36,21 +36,21 @@
 <body>
     <div class="container">
         <a href="{% url 'logout' %}">Logout</a>
-        <h2>{{ patient_vaccinations.patient.name }} ({{ patient_vaccinations.patient.birthdate }})</h2>
+        <h2>{{ patient.name }} ({{ patient.birthdate }})</h2>
 	      <table>
 		        <tr>
 			          <th>Vaccine</th>
-			          {% for m in patient_vaccinations.months %}
+			          {% for m in months %}
 			              <th>{{ m }}</th>
 			          {% endfor %}
 		        </tr>
 
-		        {% for v in patient_vaccinations.vaccinations %}
+		        {% for schedule in schedules %}
 		                <tr>
-			                  <td class="doubleheight">{{ v.name }} {% if v.is_overdue %} (overdue) {% endif %}</td>
-			                  {% for m in v.months %}
-                            {% if m.dose_due %}
-                                <td  id="droppable-{{ m.scheduleId}}-{{m.dose_key}}"class="{{ m.dose_key }} doubleheight" colspan="{{ m.consecutive_months }}"><div>{{ m.dose }}</div></td>
+			                  <td class="doubleheight">{{ schedule.name }}</td>
+			                  {% for v in schedule.vaccinations %}
+                            {% if v.dose_due %}
+                                <td  id="droppable-{{ v.scheduleId}}-{{v.dose_key}}"class="{{ v.dose_key }} doubleheight" colspan="{{ v.consecutive_months }}"><div>{{ v.dose }}</div></td>
                             {% else %}
 					                      <td class="non-dose doubleheight"></td>
                             {% endif %}
@@ -72,8 +72,8 @@
              return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
          };
                 
-       {% for v in patient_vaccinations.vaccinations %}
-       {% for m in v.months %}
+       {% for schedulev in patient_vaccinations.vaccinations %}
+       {% for m in schedulev.months %}
        {% if m.dose_due %}
        $( "#droppable-{{ m.scheduleId}}-{{m.dose_key}}" ).droppable({
            hoverClass: "ui-state-hover",

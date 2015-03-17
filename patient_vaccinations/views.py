@@ -116,12 +116,10 @@ class Schedule(object):
 
         def addImmunization(self, immunizations):
             for view_month, month_ordinal in view_months:
-
                 i = list(filter(
                     lambda x: x.age_can_be_taken == view_month or
                     x.ordinal_range.contains(month_ordinal),
                     immunizations))
-
                 if(i == []):
                     vm = VaccinationMonth(False)
                 else:
@@ -130,7 +128,6 @@ class Schedule(object):
                     vm.dose = dose_map[i.dose_key]
 
                 self.vaccinations.append(vm)
-
 
 
 class VaccinationMonth(object):
@@ -173,7 +170,7 @@ def index(request,  id):
         context = {
             'patient': patient,
             'schedules': schedules,
-            'view_months': view_months}
+            'months': [x[0] for x in view_months]}
 
     return render(request, 'patient_schedule.html', context)
 
