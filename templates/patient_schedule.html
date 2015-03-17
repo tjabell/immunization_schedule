@@ -46,38 +46,6 @@
 		        </tr>
 
 		        {% for v in patient_vaccinations.vaccinations %}
-
-                {% if v.name == 'Hepatitis B' %}
-                    <!-- All this to deal with an overlap in the Hep B immunization -->
-                    <tr>
-                        <td rowspan="2"><div>{{ v.name }} {% if v.is_overdue %} (overdue) {% endif %}</div></td>
-			                  {% for m in v.months %}
-                            {% if m.dose_due %}
-                                {% if m.dose == '2nd Dose' %}
-					                          <td class="non-dose"></td>
-                                {% elif m.dose == '1st Dose' %}
-                                    <td class="{{ m.dose_key }}" colspan="{{ m.consecutive_months }}">{{ m.dose }}</td>
-                                {% else %}
-                                    <td rowspan="2" class="{{ m.dose_key }}" colspan="{{ m.consecutive_months }}">{{ m.dose }}</td>
-                                {% endif %}
-                            {% else %}
-					                      <td rowspan="2" class="non-dose"></td>
-                            {% endif %}
-			                  {% endfor %}
-                    </tr>
-                    <tr>
-                        {% for m in v.months %}
-                            {% if m.dose_due and m.dose == '2nd Dose' %}
-                                <td id="droppable" class="{{ m.dose_key }}" colspan="{{ m.consecutive_months }}"><div>{{ m.dose }}</div></td>
-                            {% elif m.dose_due and m.dose == '1st Dose' %}
-                                <td class="non-dose"></td>
-                            {% else %}
-                                <!-- <td style="background-color:white"></td> -->
-                            {% endif %}
-                            <!-- End  -->
-			                  {% endfor %}
-                    </tr>
-                {% else %}
 		                <tr>
 			                  <td class="doubleheight">{{ v.name }} {% if v.is_overdue %} (overdue) {% endif %}</td>
 			                  {% for m in v.months %}

@@ -8,18 +8,19 @@ import json
 
 base_url = 'https://drchrono.com'
 
-months = ['Birth',
-          '1 month',
-          '2 months',
-          '4 months',
-          '6 months',
-          '12 months',
-          '15 months',
-          '18 months',
-          '24 months',
-          '4-6 years',
-          '11-12 years',
-          '14-18 years']
+view_months = [
+    ('Birth', 0),
+    ('1 month', 1),
+    ('2 months', 2),
+    ('4 months', 4),
+    ('6 months', 6),
+    ('12 months', 12),
+    ('15 months', 15),
+    ('18 months', 18),
+    ('24 months', 24),
+    ('4-6 years', 48),
+    ('11-12 years', 132),
+    ('14-18 years', 164)]
 
 dose_map = {
     'first': '1st Dose',
@@ -59,6 +60,9 @@ class OrdinalRange(object):
         self.start = start
         self.end = end
 
+    def contains(self, value):
+        return self.start <= value and self.end >= value
+
     def overlaps(self, ordinal_range):
         return self.end >= ordinal_range.start
 
@@ -72,10 +76,10 @@ class OrdinalRange(object):
 class Immunization(object):
     """Immunization information
     """
-    def __init__(self, dose_map_key, age_can_be_taken,
+    def __init__(self, dose_key, age_can_be_taken,
                  consecutive_months, ordinal_range):
         super(Immunization, self).__init__()
-        self.dose_map_key = dose_map_key
+        self.dose_key = dose_key
         self.age_can_be_taken = age_can_be_taken
         self.consecutive_months = consecutive_months
         self.ordinal_range = OrdinalRange(*ordinal_range)
@@ -104,22 +108,41 @@ def has_overlapped(immunization, immunization_schedule):
              for immunization_sched_month in immunization_schedule])
 
 
+class Schedule(object):
+        def __init__(self, name, id):
+            self.name = name
+            self.id = id
+            self.vaccinations = []
+
+        def addImmunization(self, immunizations):
+            for view_month, month_ordinal in view_months:
+
+                i = list(filter(
+                    lambda x: x.age_can_be_taken == view_month or
+                    x.ordinal_range.contains(month_ordinal),
+                    immunizations))
+
+                if(i == []):
+                    vm = VaccinationMonth(False)
+                else:
+                    vm = VaccinationMonth(True)
+                    vm.dose_key = i.dose_key
+                    vm.dose = dose_map[i.dose_key]
+
+                self.vaccinations.append(vm)
+
+
+
 class VaccinationMonth(object):
-    def __init__(self, name, dose, dose_due, dose_key):
+    def __init__(self, dose_due):
         self.scheduleId = 0
-        self.name = name
-        self.dose = dose
+        self.dose = ''
         self.dose_due = dose_due
-        self.dose_key = dose_key
+        self.dose_key = ''
         self.consecutive_months = 0
-
-
-class PatientVaccinationsSchedule(object):
-    """Patient Vaccinations Schedule"""
-    def __init__(self, patient, months, vaccinations):
-        self.patient = patient
-        self.months = months
-        self.vaccinations = vaccinations
+        self.isPartOfRange = False
+        self.overlaps = False
+        self.overlapped = False
 
 
 def index(request,  id):
@@ -140,40 +163,17 @@ def index(request,  id):
         patient_response['date_of_birth'])
     patient.vaccinations = get_vaccinations(patient.id)
 
-    vaccinations = []
+    schedules = []
     for immunization_key in sorted(child_immunization_schedule):
-        is_overdue = False
-        vaccination_months = []
-        immunization = child_immunization_schedule[immunization_key]
-        schedId, schedule = immunization
-
-        # horrible hack to skip months that are consecutive in the schedule
-        skip = 0
-        for monthnum in months:
-            vm = VaccinationMonth(monthnum, None, False, '')
-
-            for dose_key, doseMonth, consecutive_months in schedule:
-                if monthnum == doseMonth:
-                    vm.scheduleId = schedId
-                    vm.dose_key = dose_key
-                    vm.dose_due = True
-                    vm.dose = dose_map[dose_key]
-                    vm.consecutive_months = consecutive_months
-                    skip = consecutive_months
-                    vaccination_months.append(vm)
-
-            if skip == 0:
-                vaccination_months.append(vm)
-            else:
-                skip -= 1
-
-        vaccinations.append(
-            PatientVaccination(immunization_key,
-                               is_overdue,
-                               vaccination_months))
-
-    context = {'patient_vaccinations':
-               PatientVaccinationsSchedule(patient, months, vaccinations)}
+        immunization_schedule = child_immunization_schedule[immunization_key]
+        scheduleId, schedule = immunization_schedule
+        immunizations = [Immunization(*i) for i in schedule]
+        schedule = Schedule(immunization_key, scheduleId)
+        schedule.addImmunization(immunizations)
+        context = {
+            'patient': patient,
+            'schedules': schedules,
+            'view_months': view_months}
 
     return render(request, 'patient_schedule.html', context)
 
