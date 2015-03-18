@@ -18,7 +18,7 @@
   <script>
    $(function() {
        $( "#draggable" ).draggable();
-       
+
        $( "#draggable2" ).draggable();
        $( "#droppable2" ).droppable({
            accept: "#draggable2",
@@ -44,19 +44,32 @@
 			              <th>{{ m }}</th>
 			          {% endfor %}
 		        </tr>
-
-		        {% for schedule in schedules %}
+		        {% for S in schedules %}
 		                <tr>
-			                  <td class="doubleheight">{{ schedule.name }}</td>
-			                  {% for v in schedule.vaccinations %}
+			                  <td  rowspan="2">{{ S.name }}</td>
+			                  {% for v in S.vaccinations %}
                             {% if v.dose_due %}
-                                <td  id="droppable-{{ v.scheduleId}}-{{v.dose_key}}"class="{{ v.dose_key }} doubleheight" colspan="{{ v.consecutive_months }}"><div>{{ v.dose }}</div></td>
+                                {% if v.overlaps %}
+                                    <td  id="droppable-{{ v.scheduleId}}-{{v.dose_key}}"class="{{ v.dose_key }}" colspan="{{ v.consecutive_months }}"><div>{{ v.dose }}</div></td>
+                                {% else %}
+                                    <td  rowspan="2" id="droppable-{{ v.scheduleId}}-{{v.dose_key}}"class="{{ v.dose_key }}" colspan="{{ v.consecutive_months }}"><div>{{ v.dose }}</div></td>
+                                {% endif %}
                             {% else %}
-					                      <td class="non-dose doubleheight"></td>
+					                      <td class="non-dose"></td>
                             {% endif %}
 			                  {% endfor %}
-		                </tr>                    
-                {% endif %}
+		                </tr>
+                    <tr>
+                        {% for v in S.vaccinations %}
+                            {% if v.dose_due %}
+                                {% if v.overlapped %}
+                                    <td  id="droppable-{{ v.scheduleId}}-{{v.dose_key}}"class="{{ v.dose_key }}" colspan="{{ v.consecutive_months }}"><div>{{ v.dose }}</div></td>
+                                {% endif %}
+                            {% else %}
+					                      <td class="non-dose"></td>
+                            {% endif %}
+			                  {% endfor %}
+                    </tr>
 		        {% endfor %}
 	      </table>
         <div id="draggable" class="ui-widget-content">
@@ -66,16 +79,15 @@
     <script>
      $(document).ready(function () {
          var csrftoken = $.cookie('csrftoken');
-                
+
          function csrfSafeMethod(method) {
              // these HTTP methods do not require CSRF protection
              return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
          };
-                
-       {% for schedulev in patient_vaccinations.vaccinations %}
-       {% for m in schedulev.months %}
-       {% if m.dose_due %}
-       $( "#droppable-{{ m.scheduleId}}-{{m.dose_key}}" ).droppable({
+
+       {% for S in schedules %}
+       {% if S.dose_due %}
+       $( "#droppable-{{ S.scheduleId}}-{{S.dose_key}}" ).droppable({
            hoverClass: "ui-state-hover",
            drop: function( event, ui ) {
                $( this )
@@ -107,9 +119,8 @@
        });
        {% endif %}
        {% endfor %}
-       {% endfor %}
      });
     </script>
-    
+
 </body>
 </html>

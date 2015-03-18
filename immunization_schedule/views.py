@@ -72,7 +72,6 @@ def list_patients(request):
     doctor_url = user_data['doctor']
     doctor_data = requests.get(doctor_url, headers=headers).json()
     patients = retrieve_patients(access_token)
-    print(patients[0])
     return render(request,
                   'list_patients.html',
                   {'user': user_data,

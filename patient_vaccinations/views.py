@@ -34,7 +34,7 @@ dose_map = {
 }
 
 # vaccine :
-# (vaccine_id, [(dose_map_key, month, consecutive_months_for_dose, can_be_given_in_range, (ordinal_range_start, ordinal_range_end))]
+# (vaccine_id, [(dose_key, month, consecutive_months_for_dose, can_be_given_in_range, (ordinal_range_start, ordinal_range_end))]
 # child_immunization_schedule = {
 #     'Hepatitis B': (1, [('first', 'Birth', 2, (0,2)),  ('second', '1 month', 2, (1, ,2)), ('third', '6 months', 4, (6, 24)), ('c', '11-12 years', 1, (132,144))]),
 #     'Diptheria, Tetanus, Pertussis': (2, [('first','2 months', 1), ('second', '4 months', 1), ('third', '6 months', 1), ('fourth', '15 months', 2)]),
@@ -46,9 +46,20 @@ dose_map = {
 #     'Hepatitis A': (8, [('first', '24 months',  4)])}
 
 # vaccine :
-# (vaccine_id, [(dose_map_key, month, consecutive_months_for_dose, can_be_given_in_range, (ordinal_range_start, ordinal_range_end))]
+# (vaccine_id, [(dose_key, month, consecutive_months_for_dose, can_be_given_in_range, (ordinal_range_start, ordinal_range_end))]
 child_immunization_schedule = {
-    'Hepatitis B': (1, [('first', 'Birth', 2, (0, 2)),  ('second', '1 month', 2, (1, 2)), ('third', '6 months', 4, (6, 24)), ('c', '11-12 years', 1, (132, 144))])
+    'Hepatitis B':
+    (1,
+     [('first', 'Birth', 2, (0, 2)),
+      ('second', '1 month', 2, (1, 2)),
+      ('third', '6 months', 4, (6, 24)),
+      ('c', '11-12 years', 1, (132, 144))]),
+    'Diptheria, Tetanus, Pertussis':
+    (2,
+     [('first', '2 months', 1, (2, 2)),
+      ('second', '4 months', 1, (4, 4)),
+      ('third', '6 months', 1, (6, 6)),
+      ('fourth', '15 months', 2, (15, 18))]),
 }
 
 
@@ -85,7 +96,7 @@ class Immunization(object):
         self.ordinal_range = OrdinalRange(*ordinal_range)
 
     def __str__(self):
-        return "{Immunization: " + self.dose_map_key + "}"
+        return "{Immunization: " + self.dose_key + "}"
 
     def __repr__(self):
         return self.__str__()
@@ -95,7 +106,7 @@ def has_overlap(immunization, immunization_schedule):
     return any(
         [immunization.ordinal_range.overlaps(
             immunization_sched_month.ordinal_range)
-         and immunization.dose_map_key != immunization_sched_month.dose_map_key
+         and immunization.dose_key != immunization_sched_month.dose_key
          for immunization_sched_month in immunization_schedule])
 
 
@@ -103,8 +114,8 @@ def has_overlapped(immunization, immunization_schedule):
         return any(
             [immunization.ordinal_range.overlapped(
                 immunization_sched_month.ordinal_range)
-             and immunization.dose_map_key
-             != immunization_sched_month.dose_map_key
+             and immunization.dose_key
+             != immunization_sched_month.dose_key
              for immunization_sched_month in immunization_schedule])
 
 
@@ -113,21 +124,29 @@ class Schedule(object):
             self.name = name
             self.id = id
             self.vaccinations = []
+            self.has_any_overlaps = False
 
-        def addImmunization(self, immunizations):
+        def addImmunizations(self, immunizations):            
             for view_month, month_ordinal in view_months:
-                i = list(filter(
+                IL = list(filter(
                     lambda x: x.age_can_be_taken == view_month or
                     x.ordinal_range.contains(month_ordinal),
                     immunizations))
-                if(i == []):
+                if(IL == []):
                     vm = VaccinationMonth(False)
                 else:
+                    I = IL[0]
                     vm = VaccinationMonth(True)
-                    vm.dose_key = i.dose_key
-                    vm.dose = dose_map[i.dose_key]
-
+                    vm.dose_key = I.dose_key
+                    vm.dose = dose_map[I.dose_key]
+                    vm.overlaps = has_overlap(I, immunizations)
+                    vm.overlapped = has_overlapped(I, immunizations)
+                    vm.consecutive_months = I.consecutive_months
                 self.vaccinations.append(vm)
+
+            self.has_any_overlaps = any(
+                [v.overlaps or v.overlapped
+                 for v in self.vaccinations])
 
 
 class VaccinationMonth(object):
@@ -163,14 +182,15 @@ def index(request,  id):
     schedules = []
     for immunization_key in sorted(child_immunization_schedule):
         immunization_schedule = child_immunization_schedule[immunization_key]
-        scheduleId, schedule = immunization_schedule
-        immunizations = [Immunization(*i) for i in schedule]
-        schedule = Schedule(immunization_key, scheduleId)
-        schedule.addImmunization(immunizations)
-        context = {
-            'patient': patient,
-            'schedules': schedules,
-            'months': [x[0] for x in view_months]}
+        scheduleId, S = immunization_schedule
+        immunizations = [Immunization(*IL) for IL in S]
+        S = Schedule(immunization_key, scheduleId)
+        S.addImmunizations(immunizations)
+        schedules.append(S)
+    context = {
+        'patient': patient,
+        'schedules': schedules,
+        'months': [x[0] for x in view_months]}
 
     return render(request, 'patient_schedule.html', context)
 
