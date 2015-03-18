@@ -51,6 +51,8 @@
                             {% if v.dose_due %}
                                 {% if v.overlaps %}
                                     <td  id="droppable-{{ v.scheduleId}}-{{v.dose_key}}"class="{{ v.dose_key }}" colspan="{{ v.consecutive_months }}"><div>{{ v.dose }}</div></td>
+                                {% elif v.overlapped %}
+                                    <td class="non-dose"></td>
                                 {% else %}
                                     <td  rowspan="2" id="droppable-{{ v.scheduleId}}-{{v.dose_key}}"class="{{ v.dose_key }}" colspan="{{ v.consecutive_months }}"><div>{{ v.dose }}</div></td>
                                 {% endif %}
@@ -64,6 +66,8 @@
                             {% if v.dose_due %}
                                 {% if v.overlapped %}
                                     <td  id="droppable-{{ v.scheduleId}}-{{v.dose_key}}"class="{{ v.dose_key }}" colspan="{{ v.consecutive_months }}"><div>{{ v.dose }}</div></td>
+                                {% elif v.overlaps %}
+                                    <td class="non-dose"></td>
                                 {% endif %}
                             {% else %}
 					                      <td class="non-dose"></td>
