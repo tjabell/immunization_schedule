@@ -48,16 +48,16 @@ dose_map = {
 child_immunization_schedule = {
     'Hepatitis B':
     (1,
-     [('first', 'Birth', 2, (0, 2)),
+     [('first', 'Birth', 2, (0, 1)),
       ('second', '1 month', 2, (1, 2)),
       ('third', '6 months', 4, (6, 24)),
       ('c', '11-12 years', 1, (132, 144))]),
-    'Diptheria, Tetanus, Pertussis':
-    (2,
-     [('first', '2 months', 1, (2, 3)),
-      ('second', '4 months', 1, (4, 5)),
-      ('third', '6 months', 1, (6, 7)),
-      ('fourth', '15 months', 2, (15, 18))]),
+    # 'Diptheria, Tetanus, Pertussis':
+    # (2,
+    #  [('first', '2 months', 1, (2, 3)),
+    #   ('second', '4 months', 1, (4, 5)),
+    #   ('third', '6 months', 1, (6, 7)),
+    #   ('fourth', '15 months', 2, (15, 18))]),
 }
 
 
@@ -103,10 +103,12 @@ class Immunization(object):
 
 
 def has_overlap(immunization, immunization_schedule):
-    return any(
-        [immunization.ordinal_range.overlaps(I.ordinal_range)
+    print(immunization.dose_key)
+    b = [immunization.ordinal_range.overlaps(I.ordinal_range)
          and immunization.dose_key != I.dose_key
-         for I in immunization_schedule])
+         for I in immunization_schedule]
+    print('ol:' + str(b))
+    return any(b)
 
 
 def has_overlapped(immunization, immunization_schedule):

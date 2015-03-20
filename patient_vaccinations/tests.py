@@ -4,7 +4,7 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
-from patient_vaccinations.views import Immunization, has_overlap,Schedule, child_immunization_schedule
+from patient_vaccinations.views import Immunization, has_overlap,Schedule, child_immunization_schedule, OrdinalRange
 from django.test import TestCase
 
 
@@ -35,3 +35,23 @@ class An_immunization_schedule1(TestCase):
             S = Schedule(k, sid)
             S.addImmunizations(immunizations)
             print(S).vaccinations
+
+    def test_ordinal_range_early_overlaps_later(self):
+        first = OrdinalRange(0, 1)
+        second = OrdinalRange(1, 2)
+        self.assertTrue(first.overlaps(second))
+
+    def test_ordinal_range_later_overlapped_by_earlier(self):
+        first = OrdinalRange(0, 1)
+        second = OrdinalRange(1, 2)
+        self.assertTrue(second.overlapped(first))
+
+    def test_ordinal_range_later_doesnt_overlap_earlier(self):
+        first = OrdinalRange(0, 1)
+        second = OrdinalRange(1, 2)
+        self.assertFalse(second.overlaps(first))
+
+    def test_ordinal_range_earlier_not_overlapped_by_later(self):
+        first = OrdinalRange(0, 1)
+        second = OrdinalRange(1, 2)
+        self.assertFalse(second.overlaps(first))

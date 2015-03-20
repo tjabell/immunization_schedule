@@ -57,7 +57,7 @@
                                     <td  rowspan="2" id="droppable-{{ v.scheduleId}}-{{v.dose_key}}"class="{{ v.dose_key }}" ><div>{{ v.dose }}</div></td>
                                 {% endif %}
                             {% else %}
-					                      <td class="non-dose"></td>
+					                      <td rowspan="2" class="non-dose"></td>
                             {% endif %}
 			                  {% endfor %}
 		                </tr>
@@ -69,8 +69,6 @@
                                 {% elif v.overlaps %}
                                     <td class="non-dose"></td>
                                 {% endif %}
-                            {% else %}
-					                      <td class="non-dose"></td>
                             {% endif %}
 			                  {% endfor %}
                     </tr>
