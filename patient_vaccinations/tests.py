@@ -34,7 +34,7 @@ class An_immunization_schedule1(TestCase):
             immunizations = [Immunization(*ia) for ia in schedule]
             S = Schedule(k, sid)
             S.addImmunizations(immunizations)
-            print(S).vaccinations
+            print(S.vaccinations)
 
     def test_ordinal_range_early_overlaps_later(self):
         first = OrdinalRange(0, 1)

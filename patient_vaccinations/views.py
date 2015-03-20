@@ -1,3 +1,4 @@
+from __future__ import print_function
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
@@ -5,6 +6,7 @@ from patient_vaccinations.models import get_vaccinations, Patient
 import urllib
 import requests
 import json
+
 
 base_url = 'https://drchrono.com'
 
@@ -103,11 +105,9 @@ class Immunization(object):
 
 
 def has_overlap(immunization, immunization_schedule):
-    print(immunization.dose_key)
     b = [immunization.ordinal_range.overlaps(I.ordinal_range)
          and immunization.dose_key != I.dose_key
          for I in immunization_schedule]
-    print('ol:' + str(b))
     return any(b)
 
 
@@ -115,7 +115,6 @@ def has_overlapped(immunization, immunization_schedule):
     b = [immunization.ordinal_range.overlapped(I.ordinal_range)
          and immunization.dose_key != I.dose_key
          for I in immunization_schedule]
-    print(b)
     return any(b)
 
 
@@ -134,15 +133,16 @@ class Schedule(object):
                     immunizations))
                 if(IL == []):
                     vm = VaccinationMonth(False)
+                    self.vaccinations.append(vm)
                 else:
-                    I = IL[0]
-                    vm = VaccinationMonth(True)
-                    vm.dose_key = I.dose_key
-                    vm.dose = dose_map[I.dose_key]
-                    vm.overlaps = has_overlap(I, immunizations)
-                    vm.overlapped = has_overlapped(I, immunizations)
-                    vm.consecutive_months = I.consecutive_months
-                self.vaccinations.append(vm)
+                    for I in IL:
+                        vm = VaccinationMonth(True)
+                        vm.dose_key = I.dose_key
+                        vm.dose = dose_map[I.dose_key]
+                        vm.overlaps = has_overlap(I, immunizations)
+                        vm.overlapped = has_overlapped(I, immunizations)
+                        vm.consecutive_months = I.consecutive_months
+                        self.vaccinations.append(vm)
 
             self.has_any_overlaps = any(
                 [v.overlaps or v.overlapped
@@ -168,24 +168,25 @@ class VaccinationMonth(object):
 
 
 def index(request,  id):
-    access_token = request.session.get('access_token')
+    # access_token = request.session.get('access_token')
 
-    if access_token is None:
-        return HttpResponseRedirect(reverse('authorize'))
+    # if access_token is None:
+    #     return HttpResponseRedirect(reverse('authorize'))
 
-    authorization_header = "Bearer %s" % urllib.quote(access_token)
-    headers = {'Authorization': authorization_header}
-    patient_url = '/api/patients/%s' % id
-    patient_response = requests.get(
-        base_url + patient_url, headers=headers).json()
+    # authorization_header = "Bearer %s" % urllib.quote(access_token)
+    # headers = {'Authorization': authorization_header}
+    # patient_url = '/api/patients/%s' % id
+    # patient_response = requests.get(
+    #     base_url + patient_url, headers=headers).json()
 
-    patient = Patient(
-        id,
-        patient_response['first_name'] + ' ' + patient_response['last_name'],
-        patient_response['date_of_birth'])
-    patient.vaccinations = get_vaccinations(patient.id)
+    # patient = Patient(
+    #     id,
+    #     patient_response['first_name'] + ' ' + patient_response['last_name'],
+    #     patient_response['date_of_birth'])
+    # patient.vaccinations = get_vaccinations(patient.id)
 
     schedules = []
+
     for immunization_key in sorted(child_immunization_schedule):
         immunization_schedule = child_immunization_schedule[immunization_key]
         scheduleId, S = immunization_schedule
@@ -193,8 +194,9 @@ def index(request,  id):
         S = Schedule(immunization_key, scheduleId)
         S.addImmunizations(immunizations)
         schedules.append(S)
+    [print(v) for v in S.vaccinations for S in schedules]
     context = {
-        'patient': patient,
+        'patient': Patient(1, 'Test User', "10-2-81"),
         'schedules': schedules,
         'months': [x[0] for x in view_months]}
 
