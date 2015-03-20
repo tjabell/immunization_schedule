@@ -74,11 +74,11 @@ class OrdinalRange(object):
 
     def overlaps(self, ordinal_range):
         return self.end >= ordinal_range.start \
-            and self.start <= ordinal_range.end
+            and self.end <= ordinal_range.end
 
     def overlapped(self, ordinal_range):
         return self.start <= ordinal_range.end \
-            and self.end >= ordinal_range.start
+            and self.start >= ordinal_range.start
 
     def __str__(self):
         return "{" + str(self.start) + "-" + str(self.end) + "}"

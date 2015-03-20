@@ -1,0 +1,16 @@
+BeautifulSoup==3.2.1
+Django==1.5
+django-extensions==1.5.0
+elpy==1.7.1
+flake8==2.4.0
+jedi==0.8.1
+mccabe==0.3
+pep8==1.5.7
+pyflakes==0.8.1
+requests==2.5.3
+rope==0.10.2
+ropemacs==0.8
+ropemode==0.2
+shortuuid==0.4.2
+six==1.9.0
+Werkzeug==0.10.1
