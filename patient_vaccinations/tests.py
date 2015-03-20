@@ -4,11 +4,11 @@ when you run "manage.py test".
 
 Replace this with more appropriate tests for your application.
 """
-from patient_vaccinations.views import Immunization, has_overlap
+from patient_vaccinations.views import Immunization, has_overlap,Schedule, child_immunization_schedule
 from django.test import TestCase
 
 
-class An_immunization_schedule(TestCase):
+class An_immunization_schedule1(TestCase):
     def test_finds_overlapping(self):
         """
         Finds all overlapping immunizaitons in the list
@@ -23,3 +23,15 @@ class An_immunization_schedule(TestCase):
         ims = [Immunization(*i) for i in schedule]
         hs = has_overlap(ims[0], ims)
         self.assertTrue(hs)
+
+    def test_makes_correct_schedule(self):
+        """
+        Generates the correct schedule for the vaccinations
+        """
+
+        for k in child_immunization_schedule:
+            sid, schedule = child_immunization_schedule[k]
+            immunizations = [Immunization(*ia) for ia in schedule]
+            S = Schedule(k, sid)
+            S.addImmunizations(immunizations)
+            print(S).vaccinations

@@ -50,11 +50,11 @@
 			                  {% for v in S.vaccinations %}
                             {% if v.dose_due %}
                                 {% if v.overlaps %}
-                                    <td  id="droppable-{{ v.scheduleId}}-{{v.dose_key}}"class="{{ v.dose_key }}" colspan="{{ v.consecutive_months }}"><div>{{ v.dose }}</div></td>
+                                    <td  id="droppable-{{ v.scheduleId}}-{{v.dose_key}}"class="{{ v.dose_key }}" ><div>{{ v.dose }} ol</div></td>
                                 {% elif v.overlapped %}
                                     <td class="non-dose"></td>
                                 {% else %}
-                                    <td  rowspan="2" id="droppable-{{ v.scheduleId}}-{{v.dose_key}}"class="{{ v.dose_key }}" colspan="{{ v.consecutive_months }}"><div>{{ v.dose }}</div></td>
+                                    <td  rowspan="2" id="droppable-{{ v.scheduleId}}-{{v.dose_key}}"class="{{ v.dose_key }}" ><div>{{ v.dose }}</div></td>
                                 {% endif %}
                             {% else %}
 					                      <td class="non-dose"></td>
@@ -65,7 +65,7 @@
                         {% for v in S.vaccinations %}
                             {% if v.dose_due %}
                                 {% if v.overlapped %}
-                                    <td  id="droppable-{{ v.scheduleId}}-{{v.dose_key}}"class="{{ v.dose_key }}" colspan="{{ v.consecutive_months }}"><div>{{ v.dose }}</div></td>
+                                    <td  id="droppable-{{ v.scheduleId}}-{{v.dose_key}}"class="{{ v.dose_key }}" ><div>{{ v.dose }} ol'd</div></td>
                                 {% elif v.overlaps %}
                                     <td class="non-dose"></td>
                                 {% endif %}
