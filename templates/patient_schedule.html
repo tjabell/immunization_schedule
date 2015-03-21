@@ -44,35 +44,132 @@
 			              <th>{{ m }}</th>
 			          {% endfor %}
 		        </tr>
-		        {% for S in schedules %}
-		                <tr>
-			                  <td  rowspan="2">{{ S.name }}</td>
-			                  {% for v in S.vaccinations %}
-                            {% if v.dose_due %}
-                                {% if v.overlaps %}
-                                    <td  id="droppable-{{ v.scheduleId}}-{{v.dose_key}}"class="{{ v.dose_key }}" ><div>{{ v.dose }} ol</div></td>
-                                {% elif v.overlapped %}
-                                    <td class="non-dose"></td>
-                                {% else %}
-                                    <td  rowspan="2" id="droppable-{{ v.scheduleId}}-{{v.dose_key}}"class="{{ v.dose_key }}" ><div>{{ v.dose }}</div></td>
-                                {% endif %}
-                            {% else %}
-					                      <td rowspan="2" class="non-dose"></td>
-                            {% endif %}
-			                  {% endfor %}
-		                </tr>
-                    <tr>
-                        {% for v in S.vaccinations %}
-                            {% if v.dose_due %}
-                                {% if v.overlapped %}
-                                    <td  id="droppable-{{ v.scheduleId}}-{{v.dose_key}}"class="{{ v.dose_key }}" ><div>{{ v.dose }} ol'd</div></td>
-                                {% elif v.overlaps %}
-                                    <td class="non-dose"></td>
-                                {% endif %}
-                            {% endif %}
-			                  {% endfor %}
-                    </tr>
-		        {% endfor %}
+            <tr>
+                <td rowspan="2">Hepatitis B</td>
+                <td colspan="3">1st Dose</td>
+                <td></td>
+                <td rowspan="2" colspan="4">3rd Dose</td>
+                <td></td>
+                <td></td>
+                <td rowspan="2">catch up</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td colspan="3">2nd Dose</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td rowspan="2">Diptheria, Tetanus, Pertussis</td>
+                <td></td>
+                <td></td>
+                <td rowspan="2">1st dose</td>
+                <td rowspan="2">2nd dose</td>
+                <td rowspan="2">3rd dose</td>
+                <td></td>
+                <td colspan="2" rowspan="2">4th dose</td>
+                <td></td>
+                <td rowspan="2">5th dose</td>
+                <td rowspan="2" colspan="2">Tetanus + Diptheria</td> 
+           </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>H.Influenzae type B</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Inactivated Polio</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Pneumococcal Conjugate</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Measles, Mumps, Rubella</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Varicella (Chickenpox)</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Hepatitis A</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
 	      </table>
         <div id="draggable" class="ui-widget-content">
             <h4>Drag&Drop to Vaccinate</h4>
