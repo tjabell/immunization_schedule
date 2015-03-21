@@ -143,7 +143,7 @@ class Schedule(object):
                         vm.overlapped = has_overlapped(I, immunizations)
                         vm.consecutive_months = I.consecutive_months
                         self.vaccinations.append(vm)
-
+            print(len(self.vaccinations))
             self.has_any_overlaps = any(
                 [v.overlaps or v.overlapped
                  for v in self.vaccinations])
