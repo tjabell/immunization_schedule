@@ -35,6 +35,8 @@ dose_map = {
     's': '1 dose (in selected areas)'
 }
 
+patient_vaccinations = set()
+
 # vaccine :
 # (vaccine_id, [(dose_key, month, consecutive_months_for_dose, can_be_given_in_range, (ordinal_range_start, ordinal_range_end))]
 # child_immunization_schedule = {
@@ -199,14 +201,22 @@ def index(request,  id):
         S.addImmunizations(immunizations)
         schedules.append(S)
 
+    pv = {}
+    for i in patient_vaccinations:
+        pv[i] = True
+
     context = {
-        'patient': Patient(1, 'Test User', "10-2-81"),
+        'patient': Patient(5170603, 'Test User', "10-2-81"),
         'schedules': schedules,
         'months': [x[0] for x in view_months],
-        'pv': {'hep_b_first': True}}
+        'pv': pv}
 
     return render(request, 'patient_schedule.html', context)
 
 
 def vaccinate(request):
-    return HttpResponse(json.dumps({"result": "success"}), content_type="application/x-javascript")
+    patient_id = request.POST["patient_id"]
+    pv = request.POST["vaccinated_ids"]
+    [patient_vaccinations.add(v) for v in pv.split('#')]
+    return HttpResponseRedirect(
+        reverse('index', args=[int(patient_id)]))

@@ -21,7 +21,16 @@
   <script>
    $(function() {
        $( "#selectable" ).selectable({
-       filter: ".unvaccinated"});
+           filter: ".unvaccinated",
+           stop: function() {
+               $("#vaccinated_ids").attr("value","");
+               var result = ""
+               $(".ui-selected").each(function() {
+                   result = result + "#" + this.id;
+               });
+               $("#vaccinated_ids").attr("value",result);
+           }
+       });
    });
   </script>
 </head>
@@ -29,6 +38,7 @@
     <div class="container">
         <a href="{% url 'logout' %}">Logout</a>
         <h2>{{ patient.name }} ({{ patient.birthdate }})</h2>
+        <div id="select-result"></div>
 	      <table id="selectable">
 		        <tr>
 			          <th>Vaccine</th>
@@ -98,11 +108,14 @@
                 <td>Hepatitis A</td>
             </tr>
 	      </table>
-        <div id="draggable" class="ui-widget-content">
-            <h4>Vaccinate</h4>
-        </div>
+        <form name="submit_vaccinations" action="vaccinate/" method="POST">
+            {% csrf_token %}
+            <input type="hidden" id="vaccinated_ids" name="vaccinated_ids" value="test" />
+            <input type="hidden" id="patient_id" name="patient_id" value="{{ patient.id }}" />
+            <input type="submit" value="Save" />
+        </form>
     </div>
-    <script>
+    <script type="text/javascript">
      $(document).ready(function () {
          var csrftoken = $.cookie('csrftoken');
 
@@ -111,40 +124,28 @@
              return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
          };
 
-       {% for S in schedules %}
-       {% if S.dose_due %}
-       $( "#droppable-{{ S.scheduleId}}-{{S.dose_key}}" ).droppable({
-           hoverClass: "ui-state-hover",
-           drop: function( event, ui ) {
-               $( this )
-                  .addClass( "ui-state-highlight" )
-                  .find( "div" )
-                  .html( "Vaccinated!" );
+/*
+         $.ajaxSetup({
+             beforeSend: function(xhr, settings) {
+                 if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                     // send the token to same-origin, relative URLs only.
+                     // Send the token only if the method warrants CSRF protection
+                     // Using the CSRFToken value acquired earlier
+                     xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                 }
+             }
+         });
 
-               $.ajaxSetup({
-                    beforeSend: function(xhr, settings) {
-                        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                            // send the token to same-origin, relative URLs only.
-                            // Send the token only if the method warrants CSRF protection
-                            // Using the CSRFToken value acquired earlier
-                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                        }
-                    }
-               });
-
-               var obj = {}
-               $.ajax({
-                        url: '{% url 'vaccinate' %}',
-                        type: 'POST',
-                        data: obj,
-                        success: function(res) {},
-                        complete: function() {},
-                        error: function (xhr, textStatus, thrownError) {}
-                    });
-           }
-       });
-       {% endif %}
-       {% endfor %}
+         var obj = {}
+         $.ajax({
+             url: '{% url 'vaccinate' %}',
+             type: 'POST',
+             data: obj,
+             success: function(res) {},
+             complete: function() {},
+             error: function (xhr, textStatus, thrownError) {}
+         });
+         */
      });
     </script>
 
