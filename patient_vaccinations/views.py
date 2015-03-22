@@ -207,8 +207,6 @@ def index(request,  id):
 
     context = {
         'patient': Patient(5170603, 'Test User', "10-2-81"),
-        'schedules': schedules,
-        'months': [x[0] for x in view_months],
         'pv': pv}
 
     return render(request, 'patient_schedule.html', context)

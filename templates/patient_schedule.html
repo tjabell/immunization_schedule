@@ -73,14 +73,14 @@
                 <td rowspan="2">Diptheria, Tetanus, Pertussis</td>
                 <td rowspan="2"></td>
                 <td rowspan="2"></td>
-                <td rowspan="2" class="first">1st dose</td>
-                <td rowspan="2" class="second">2nd dose</td>
-                <td rowspan="2" class="third">3rd dose</td>
+                <td rowspan="2" class="first {% if pv.dtap_first %}vaccinated{% else %}unvaccinated{%endif%}" id="dtap_first">1st dose</td>
+                <td rowspan="2" class="second {% if pv.dtap_second %}vaccinated{% else %}unvaccinated{%endif%}" id="dtap_second">2nd dose</td>
+                <td rowspan="2" class="third {% if pv.dtap_third %}vaccinated{% else %}unvaccinated{%endif%}" id="dtap_third">3rd dose</td>
                 <td rowspan="2"></td>
-                <td colspan="2" rowspan="2" class="fourth">4th dose</td>
+                <td colspan="2" rowspan="2" class="fourth {% if pv.dtap_fourth %}vaccinated{% else %}unvaccinated{%endif%}" id="dtap_fourth">4th dose</td>
                 <td rowspan="2"></td>
-                <td rowspan="2" class="fifth">5th dose</td>
-                <td rowspan="2" colspan="2" class="t">Tetanus + Diptheria</td>
+                <td rowspan="2" class="fifth {% if pv.dtap_fifth %}vaccinated{% else %}unvaccinated{%endif%}" id="dtap_fifth">5th dose</td>
+                <td rowspan="2" colspan="2" class="t {% if pv.dtap_fifth %}vaccinated{% else %}unvaccinated{%endif%}" id="dtap_t">Tetanus + Diptheria</td>
                 <td rowspan="2"></td>
            </tr>
             <tr>
