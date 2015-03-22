@@ -4,7 +4,7 @@
 	{% load staticfiles %}
   {% load range %}
   <script src="//code.jquery.com/jquery-1.10.2.js"></script>
-  <script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
   <script type="text/javascript" src="{% static 'jquery.cookie.js' %}"></script>
   <link href="{% static 'x_rotating_card/css/bootstrap.css' %}" rel="stylesheet"/>
   <link href="{% static 'x_rotating_card/css/rotating-card.css' %} " rel="stylesheet"/>
@@ -14,22 +14,14 @@
    #draggable, #draggable2 { width: 90px; height: 90px; padding: 0.5em; float: left; margin: 10px 10px 10px 0; }
    #droppable2 { width: 120px; height: 120px; padding: 0.5em; float: left; margin: 10px; }
    h3 { clear: left; }
+   #feedback { font-size: 1.4em; }
+  #selectable .ui-selecting { background: #FECA40; }
+  #selectable .ui-selected { background: #F39814; color: white; }
   </style>
   <script>
    $(function() {
-       $( "#draggable" ).draggable();
-
-       $( "#draggable2" ).draggable();
-       $( "#droppable2" ).droppable({
-           accept: "#draggable2",
-           activeClass: "ui-state-default",
-           drop: function( event, ui ) {
-               $( this )
-          .addClass( "ui-state-highlight" )
-          .find( "p" )
-          .html( "Vaccinated!" );
-           }
-       });
+       $( "#selectable" ).selectable({
+       filter: ".unvaccinated"});
    });
   </script>
 </head>
@@ -37,7 +29,7 @@
     <div class="container">
         <a href="{% url 'logout' %}">Logout</a>
         <h2>{{ patient.name }} ({{ patient.birthdate }})</h2>
-	      <table>
+	      <table id="selectable">
 		        <tr>
 			          <th>Vaccine</th>
                 <th>Birth</th>
@@ -54,19 +46,18 @@
                 <th colspan="2">14-18 years</th>
 		        </tr>
             <tr>
-                <td rowspan="2">Hepatitis B</td>
-                <td colspan="3" class="first">1st Dose</td>
+                <td rowspan="2" id="hep-b">Hepatitis B</td>
+                <td colspan="3" class="ui-widget-content {% if pv.hep_b_first %}vaccinated{% else %}unvaccinated{%endif%}" id="hep_b_first">1st Dose</td>
                 <td></td>
-                <td rowspan="2" colspan="4" class="third">3rd Dose</td>
+                <td rowspan="2" colspan="4" class="third {% if pv.hep_b_third %}vaccinated{% else %}unvaccinated{%endif%}" id="hep_b_third">3rd Dose</td>
                 <td rowspan="2"></td>
                 <td rowspan="2"></td>
-                <td rowspan="2" class="c">catch up</td>
+                <td rowspan="2" class="c {% if pv.catchup %}vaccinated{% else %}unvaccinated{%endif%}" id="hep_b_catchup">catch up</td>
                 <td colspan="2" rowspan="2"></td>
-
             </tr>
             <tr>
                 <td></td>
-                <td colspan="3" class="second">2nd Dose</td>
+                <td colspan="3" class="second {% if pv.hep_b_second %}vaccinated{% else %}unvaccinated{%endif%}" id="hep_b_second">2nd Dose</td>
             </tr>
             <tr>
                 <td rowspan="2">Diptheria, Tetanus, Pertussis</td>

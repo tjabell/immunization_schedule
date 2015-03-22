@@ -167,6 +167,10 @@ class VaccinationMonth(object):
         return self.__str__()
 
 
+def say_hello(text):
+    return "hello: " + text
+
+
 def index(request,  id):
     # access_token = request.session.get('access_token')
 
@@ -194,11 +198,12 @@ def index(request,  id):
         S = Schedule(immunization_key, scheduleId)
         S.addImmunizations(immunizations)
         schedules.append(S)
-    [print(v) for v in S.vaccinations for S in schedules]
+
     context = {
         'patient': Patient(1, 'Test User', "10-2-81"),
         'schedules': schedules,
-        'months': [x[0] for x in view_months]}
+        'months': [x[0] for x in view_months],
+        'pv': {'hep_b_first': True}}
 
     return render(request, 'patient_schedule.html', context)
 
