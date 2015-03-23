@@ -4,7 +4,7 @@
 	{% load staticfiles %}
   {% load range %}
   <script src="//code.jquery.com/jquery-1.10.2.js"></script>
-  <script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
   <script type="text/javascript" src="{% static 'jquery.cookie.js' %}"></script>
   <link href="{% static 'x_rotating_card/css/bootstrap.css' %}" rel="stylesheet"/>
   <link href="{% static 'x_rotating_card/css/rotating-card.css' %} " rel="stylesheet"/>
@@ -14,20 +14,21 @@
    #draggable, #draggable2 { width: 90px; padding: 0.5em; float: left; margin: 10px 10px 10px 0; }
    #droppable2 { width: 120px; height: 120px; padding: 0.5em; float: left; margin: 10px; }
    h3 { clear: left; }
+   #feedback { font-size: 1.4em; }
+  #selectable .ui-selecting { background: #FECA40; }
+  #selectable .ui-selected { background: #F39814; color: white; }
   </style>
   <script>
    $(function() {
-       $( "#draggable" ).draggable({ revert: "valid" });
-       
-       $( "#draggable2" ).draggable();
-       $( "#droppable2" ).droppable({
-           accept: "#draggable2",
-           activeClass: "ui-state-default",
-           drop: function( event, ui ) {
-               $( this )
-          .addClass( "ui-state-highlight" )
-          .find( "p" )
-          .html( "Vaccinated!" );
+       $( "#selectable" ).selectable({
+           filter: ".unvaccinated",
+           stop: function() {
+               $("#vaccinated_ids").attr("value","");
+               var result = ""
+               $(".ui-selected").each(function() {
+                   result = result + "#" + this.id;
+               });
+               $("#vaccinated_ids").attr("value",result);
            }
        });
    });
@@ -36,110 +37,185 @@
 <body>
     <div class="container">
         <a href="{% url 'logout' %}">Logout</a>
-        <h2>{{ patient_vaccinations.patient.name }} ({{ patient_vaccinations.patient.birthdate }})</h2>
-	      <table>
+        <h2>{{ patient.name }} ({{ patient.birthdate }})</h2>
+        <div id="select-result"></div>
+	      <table id="selectable">
 		        <tr>
 			          <th>Vaccine</th>
-			          {% for m in patient_vaccinations.months %}
-			              <th>{{ m }}</th>
-			          {% endfor %}
+                <th>Birth</th>
+                <th>1 month</th>
+                <th>2 months</th>
+                <th>4 months</th>
+                <th>6 months</th>
+                <th>12 months</th>
+                <th>15 months</th>
+                <th>18 months</th>
+                <th>24 months</th>
+                <th>4-6 years</th>
+                <th>11-12 years</th>
+                <th colspan="2">14-18 years</th>
 		        </tr>
-
-		        {% for v in patient_vaccinations.vaccinations %}
-
-                {% if v.name == 'Hepatitis B' %}
-                    <!-- All this to deal with an overlap in the Hep B immunization -->
-                    <tr>
-                        <td rowspan="2"><div>{{ v.name }} {% if v.is_overdue %} (overdue) {% endif %}</div></td>
-			                  {% for m in v.months %}
-                            {% if m.dose_due %}
-                                {% if m.dose == '2nd Dose' %}
-					                          <td class="non-dose"></td>
-                                {% elif m.dose == '1st Dose' %}
-                                    <td class="{{ m.dose_key }}" colspan="{{ m.consecutive_months }}">{{ m.dose }}</td>
-                                {% else %}
-                                    <td rowspan="2" class="{{ m.dose_key }}" colspan="{{ m.consecutive_months }}">{{ m.dose }}</td>
-                                {% endif %}
-                            {% else %}
-					                      <td rowspan="2" class="non-dose"></td>
-                            {% endif %}
-			                  {% endfor %}
-                    </tr>
-                    <tr>
-                        {% for m in v.months %}
-                            {% if m.dose_due and m.dose == '2nd Dose' %}
-                                <td id="droppable" class="{{ m.dose_key }}" colspan="{{ m.consecutive_months }}"><div>{{ m.dose }}</div></td>
-                            {% elif m.dose_due and m.dose == '1st Dose' %}
-                                <td class="non-dose"></td>
-                            {% else %}
-                                <!-- <td style="background-color:white"></td> -->
-                            {% endif %}
-                            <!-- End  -->
-			                  {% endfor %}
-                    </tr>
-                {% else %}
-		                <tr>
-			                  <td class="doubleheight">{{ v.name }} {% if v.is_overdue %} (overdue) {% endif %}</td>
-			                  {% for m in v.months %}
-                            {% if m.dose_due %}
-                                <td  id="droppable-{{ m.scheduleId}}-{{m.dose_key}}"class="{{ m.dose_key }} doubleheight" colspan="{{ m.consecutive_months }}"><div>{{ m.dose }}</div></td>
-                            {% else %}
-					                      <td class="non-dose doubleheight"></td>
-                            {% endif %}
-			                  {% endfor %}
-		                </tr>                    
-                {% endif %}
-		        {% endfor %}
+            <tr>
+                <td rowspan="2" id="hep-b">Hepatitis B</td>
+                <td colspan="3" class="first {% if pv.hep_b_first %}vaccinated{% else %}unvaccinated{%endif%}" id="hep_b_first">1st Dose</td>
+                <td></td>
+                <td rowspan="2" colspan="4" class="third {% if pv.hep_b_third %}vaccinated{% else %}unvaccinated{%endif%}" id="hep_b_third">3rd Dose</td>
+                <td rowspan="2"></td>
+                <td rowspan="2"></td>
+                <td rowspan="2" class="c {% if pv.hep_b_catchup %}vaccinated{% else %}unvaccinated{%endif%}" id="hep_b_catchup">catch up</td>
+                <td colspan="2" rowspan="2"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td colspan="3" class="second {% if pv.hep_b_second %}vaccinated{% else %}unvaccinated{%endif%}" id="hep_b_second">2nd Dose</td>
+            </tr>
+            <tr>
+                <td rowspan="2">Diptheria, Tetanus, Pertussis</td>
+                <td rowspan="2"></td>
+                <td rowspan="2"></td>
+                <td rowspan="2" class="first {% if pv.dtap_first %}vaccinated{% else %}unvaccinated{%endif%}" id="dtap_first">1st dose</td>
+                <td rowspan="2" class="second {% if pv.dtap_second %}vaccinated{% else %}unvaccinated{%endif%}" id="dtap_second">2nd dose</td>
+                <td rowspan="2" class="third {% if pv.dtap_third %}vaccinated{% else %}unvaccinated{%endif%}" id="dtap_third">3rd dose</td>
+                <td rowspan="2"></td>
+                <td colspan="2" rowspan="2" class="fourth {% if pv.dtap_fourth %}vaccinated{% else %}unvaccinated{%endif%}" id="dtap_fourth">4th dose</td>
+                <td rowspan="2"></td>
+                <td rowspan="2" class="fifth {% if pv.dtap_fifth %}vaccinated{% else %}unvaccinated{%endif%}" id="dtap_fifth">5th dose</td>
+                <td rowspan="2" colspan="2" class="t {% if pv.dtap_t %}vaccinated{% else %}unvaccinated{%endif%}" id="dtap_t">Tetanus + Diptheria</td>
+                <td rowspan="2"></td>
+           </tr>
+            <tr>
+            </tr>
+            <tr>
+                <td rowspan="2">H.Influenzae type B</td>
+                <td rowspan="2"></td>
+                <td rowspan="2"></td>
+                <td rowspan="2" class="first {% if pv.hib_first %}vaccinated{% else %}unvaccinated{%endif%}" id="hib_first">1st dose</td>
+                <td rowspan="2" class="second {% if pv.hib_second %}vaccinated{% else %}unvaccinated{%endif%}" id="hib_second">2nd dose</td>
+                <td rowspan="2" class="third {% if pv.hib_third %}vaccinated{% else %}unvaccinated{%endif%}" id="hib_third">3rd dose</td>
+                <td colspan="2" rowspan="2" class="fourth {% if pv.hib_fourth %}vaccinated{% else %}unvaccinated{%endif%}" id="hib_fourth">4th dose</td>
+                <td rowspan="2"></td>
+                <td rowspan="2"></td>
+                <td rowspan="2"></td>
+                <td rowspan="2" ></td>
+                <td rowspan="2" colspan="2"></td>
+           </tr>
+            <tr>
+            </tr>
+            <tr>
+                <td rowspan="2">Inactivated Polio</td>
+                <td rowspan="2"></td>
+                <td rowspan="2"></td>
+                <td rowspan="2" class="first {% if pv.polio_first %}vaccinated{% else %}unvaccinated{%endif%}" id="polio_first">1st dose</td>
+                <td rowspan="2" class="second {% if pv.polio_second %}vaccinated{% else %}unvaccinated{%endif%}" id="polio_second">2nd dose</td>
+                <td rowspan="2" colspan="4" class="third {% if pv.polio_third %}vaccinated{% else %}unvaccinated{%endif%}" id="polio_third">3rd dose</td>
+                <td rowspan="2"></td>
+                <td rowspan="2" class="fourth {% if pv.polio_fourth %}vaccinated{% else %}unvaccinated{%endif%}" id="polio_fourth">4th dose</td>
+                <td rowspan="2" ></td>
+                <td colspan="2" rowspan="2"></td>
+           </tr>
+            <tr>
+            </tr>
+            <tr>
+                <td rowspan="2">Pneumococcal Conjugate</td>
+                <td rowspan="2"></td>
+                <td rowspan="2"></td>
+                <td rowspan="2" class="first {% if pv.pneum_first %}vaccinated{% else %}unvaccinated{%endif%}" id="pneum_first">1st dose</td>
+                <td rowspan="2" class="second {% if pv.pneum_second %}vaccinated{% else %}unvaccinated{%endif%}" id="pneum_second">2nd dose</td>
+                <td rowspan="2" class="third {% if pv.pneum_third %}vaccinated{% else %}unvaccinated{%endif%}" id="pneum_third">3rd dose</td>
+                <td colspan="2" rowspan="2" class="fourth {% if pv.pneum_fourth %}vaccinated{% else %}unvaccinated{%endif%}" id="pneum_fourth">4th dose</td>
+                <td rowspan="2"></td>
+                <td rowspan="2"></td>
+                <td rowspan="2"></td>
+                <td rowspan="2" ></td>
+                <td rowspan="2" colspan="2"></td>
+           </tr>
+           <tr>
+           </tr>
+            <tr>
+                <td rowspan="2">Measles, Mumps, Rubella</td>
+                <td rowspan="2"></td>
+                <td rowspan="2"></td>
+                <td rowspan="2"></td>
+                <td rowspan="2"></td>
+                <td rowspan="2"></td>
+                <td rowspan="2" colspan="2" class="first {% if pv.mmr_first %}vaccinated{% else %}unvaccinated{%endif%}" id="mmr_first">1st dose</td>
+                <td rowspan="2"></td>
+                <td rowspan="2" ></td>
+                <td rowspan="2" class="second {% if pv.mmr_second %}vaccinated{% else %}unvaccinated{%endif%}" id="mmr_second">2nd dose</td>
+                <td rowspan="2" class="c {% if pv.mmr_catchup %}vaccinated{% else %}unvaccinated{%endif%}" id="mmr_catchup">catch up</td>
+                <td rowspan="2" colspan="2"></td>
+           </tr>
+           <tr>
+           </tr>
+            <tr>
+                <td rowspan="2">Varicella (Chickenpox)</td>
+                <td rowspan="2"></td>
+                <td rowspan="2"></td>
+                <td rowspan="2"></td>
+                <td rowspan="2"></td>
+                <td rowspan="2"></td>
+                <td rowspan="2" colspan="3" class="first {% if pv.mmr_first %}vaccinated{% else %}unvaccinated{%endif%}" id="mmr_first">1st dose</td>
+                <td rowspan="2" ></td>
+                <td rowspan="2" ></td>
+                <td rowspan="2" class="c {% if pv.mmr_catchup %}vaccinated{% else %}unvaccinated{%endif%}" id="mmr_catchup">catch up</td>
+                <td rowspan="2" colspan="2"></td>
+           </tr>
+           <tr>
+           </tr>
+           <tr>
+                <td rowspan="2">Hepatitis A</td>
+                <td rowspan="2"></td>
+                <td rowspan="2"></td>
+                <td rowspan="2"></td>
+                <td rowspan="2"></td>
+                <td rowspan="2"></td>
+                <td rowspan="2" ></td>
+                <td rowspan="2" ></td>                
+                <td rowspan="2" colspan="6" class="first {% if pv.hepa %}vaccinated{% else %}unvaccinated{%endif%}" id="hepa">1st dose(in selected areas)</td>
+           </tr>
+            <tr>
+            </tr>
 	      </table>
-        <a class="btn btn-primary ui-widget-content" href="#" role="button" id="draggable">Vaccinate</a>
+        <form name="submit_vaccinations" action="vaccinate/" method="POST">
+            {% csrf_token %}
+            <input type="hidden" id="vaccinated_ids" name="vaccinated_ids" value="test" />
+            <input type="hidden" id="patient_id" name="patient_id" value="{{ patient.id }}" />
+            <button class="btn btn-default"  type="submit">Save</button>
+        </form>
     </div>
-    <script>
+    <script type="text/javascript">
      $(document).ready(function () {
          var csrftoken = $.cookie('csrftoken');
-                
+
          function csrfSafeMethod(method) {
              // these HTTP methods do not require CSRF protection
              return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
          };
-                
-       {% for v in patient_vaccinations.vaccinations %}
-       {% for m in v.months %}
-       {% if m.dose_due %}
-       $( "#droppable-{{ m.scheduleId}}-{{m.dose_key}}" ).droppable({
-           hoverClass: "ui-state-hover",
-           drop: function( event, ui ) {
-               $( this )
-                  .addClass( "ui-state-highlight" )
-                  .find( "div" )
-                  .html( "Vaccinated!" );
 
-               $.ajaxSetup({
-                    beforeSend: function(xhr, settings) {
-                        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                            // send the token to same-origin, relative URLs only.
-                            // Send the token only if the method warrants CSRF protection
-                            // Using the CSRFToken value acquired earlier
-                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                        }
-                    }
-               });
+/*
+         $.ajaxSetup({
+             beforeSend: function(xhr, settings) {
+                 if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                     // send the token to same-origin, relative URLs only.
+                     // Send the token only if the method warrants CSRF protection
+                     // Using the CSRFToken value acquired earlier
+                     xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                 }
+             }
+         });
 
-               var obj = {}
-               $.ajax({
-                        url: '{% url 'vaccinate' %}',
-                        type: 'POST',
-                        data: obj,
-                        success: function(res) {},
-                        complete: function() {},
-                        error: function (xhr, textStatus, thrownError) {}
-                    });
-           }
-       });
-       {% endif %}
-       {% endfor %}
-       {% endfor %}
+         var obj = {}
+         $.ajax({
+             url: '{% url 'vaccinate' %}',
+             type: 'POST',
+             data: obj,
+             success: function(res) {},
+             complete: function() {},
+             error: function (xhr, textStatus, thrownError) {}
+         });
+         */
      });
     </script>
-    
+
 </body>
 </html>

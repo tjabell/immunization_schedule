@@ -23,6 +23,7 @@ td.fourth {
 td.fifth {
     background-color: #A6568B;
 }
+
 td.c,td.t {
     background: #e28ee5; /* Old browsers */
     background: -moz-linear-gradient(top, #e28ee5 0%, #e570e7 39%, #c85ec7 74%, #c85ec7 74%, #a849a3 100%); /* FF3.6+ */
@@ -36,6 +37,7 @@ td.c,td.t {
 
 td.s { background-color: #FFD1F0; }
 
-td.doubleheight {
-    height: 3em;
+td.vaccinated {
+    background:none;
+    background-color: green;
 }
