@@ -2,19 +2,6 @@ from django.db import models
 import datetime
 
 
-def get_vaccinations(patient_id):
-    vacs = {}
-    v = Vaccination()
-    v.immunization_id = 1
-    v.dose = 1
-    v.patient_id = patient_id
-    v.name = 'Hepatitis B'
-    v.date = datetime.date(2015, 2, 5)
-
-    vacs[(v.immunization_id, v.dose)] = v
-    return vacs
-
-
 class Patient(object):
     """Patient"""
     def __init__(self, id, name, birthdate):
