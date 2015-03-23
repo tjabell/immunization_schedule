@@ -180,7 +180,7 @@
             {% csrf_token %}
             <input type="hidden" id="vaccinated_ids" name="vaccinated_ids" value="test" />
             <input type="hidden" id="patient_id" name="patient_id" value="{{ patient.id }}" />
-            <input type="submit" value="Save" />
+            <button class="btn btn-default"  type="submit">Save</button>
         </form>
     </div>
     <script type="text/javascript">
